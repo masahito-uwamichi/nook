@@ -19,11 +19,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout nook repository
-      uses: actions/checkout@v2
-      with:
-        repository: masahito-uwamichi/nook
-
+      
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
