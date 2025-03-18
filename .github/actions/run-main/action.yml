@@ -22,6 +22,7 @@ runs:
     - name: Clone repository
       run: |
         git clone https://github.com/masahito-uwamichi/nook.git
+      shell: bash
       
     - name: Install dependencies
       run: |
