@@ -21,9 +21,19 @@ runs:
         pip install -r nook/functions/viewer/requirements.txt
       shell: bash
 
+    - name: Install ngrok
+      run: |
+        wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+        unzip ngrok-stable-linux-amd64.zip
+        sudo mv ngrok /usr/local/bin
+      shell: bash
+
     - name: Start FastAPI server
       run: |
         export PYTHONPATH=$(pwd)/nook
-        nohup uvicorn nook.functions.viewer.viewer:app --host 0.0.0.0 --port 8000 & 
+        nohup uvicorn nook.functions.viewer.viewer:app --host 0.0.0.0 --port 8000 &
+        ./ngrok http 8000 > /dev/null &
+        sleep 5
+        curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url
         sleep 1200  # Run for 20 minutes (1200 seconds)
       shell: bash
