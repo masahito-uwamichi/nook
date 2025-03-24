@@ -23,6 +23,7 @@ runs:
 
     - name: Start FastAPI server
       run: |
+        export PYTHONPATH=$(pwd)/nook
         nohup uvicorn nook.functions.viewer.viewer:app --host 0.0.0.0 --port 8000 & # python nook/nook/functions/viewer/viewer.py 
         sleep 1200  # Run for 20 minutes (1200 seconds)
       shell: bash
