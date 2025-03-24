@@ -1,5 +1,9 @@
 name: 'Run Nook Viewer Script'
 description: 'Clones the nook repository and runs the vierer.py script'
+inputs:
+  ngrok_auth_token:
+    description: 'NGrok Authentication Token'
+    required: True
 runs:
   using: 'composite'
   steps:
@@ -33,7 +37,7 @@ runs:
 
     - name: Start ngrok
       run: |
-        ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+        ngrok config add-authtoken ${{ inputs.ngrok_auth_token }}
         #ngrok http 80
       shell: bash
 
