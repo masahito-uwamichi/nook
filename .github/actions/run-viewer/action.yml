@@ -1,0 +1,27 @@
+name: 'Run Nook Viewer Script'
+description: 'Clones the nook repository and runs the vierer.py script'
+runs:
+  using: 'composite'
+  steps:
+    - name: Clone repository
+      run: |
+        git clone https://github.com/masahito-uwamichi/nook.git
+      shell: bash
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      working-directory: nook
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      shell: bash
+
+    - name: Start FastAPI server
+      run: |
+        nohup uvicorn nook.functions.viewer.viewer:app --host 0.0.0.0 --port 8000 &
+        sleep 1200  # Run for 20 minutes (1200 seconds)
+      shell: bash
