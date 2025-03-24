@@ -14,11 +14,11 @@ runs:
         python-version: '3.12'
 
     - name: Install dependencies
-      working-directory: 
+      working-directory: nook
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install -r nook/nook/functions/viewer/requirements.txt
+        pip install -r nook/functions/viewer/requirements.txt
       shell: bash
 
     - name: Start FastAPI server
