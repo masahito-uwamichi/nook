@@ -4,6 +4,12 @@ inputs:
   ngrok_auth_token:
     description: 'NGrok Authentication Token'
     required: True
+  gemini_api_key:
+    description: 'Gemini API key'
+    required: true
+  output_dir:
+    description: 'Output directory'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -49,3 +55,6 @@ runs:
         curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url
         sleep 1200  # Run for 20 minutes (1200 seconds)
       shell: bash
+      env:        
+        GEMINI_API_KEY: ${{ inputs.gemini_api_key }}
+        OUTPUT_DIR: ${{ inputs.output_dir }}
