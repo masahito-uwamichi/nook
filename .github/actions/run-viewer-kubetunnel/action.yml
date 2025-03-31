@@ -1,4 +1,3 @@
-name: 'Run Nook Viewer Script'
 name: 'Run Nook Viewer Script with kubectl tunnel'
 description: 'Clones the nook repository and runs the viewer.py script'
 inputs:
