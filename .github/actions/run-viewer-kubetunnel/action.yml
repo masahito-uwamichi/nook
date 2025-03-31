@@ -1,0 +1,66 @@
+name: 'Run Nook Viewer Script'
+name: 'Run Nook Viewer Script with kubectl tunnel'
+description: 'Clones the nook repository and runs the viewer.py script'
+inputs:
+  cloudflare_tunnel_token:
+    description: 'Cloudflare Tunnel Token'
+    required: true
+  gemini_api_key:
+    description: 'Gemini API key'
+    required: true
+  output_dir:
+    description: 'Output directory'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Clone repository
+      run: |
+        git clone https://github.com/masahito-uwamichi/nook.git
+      shell: bash
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      working-directory: nook
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r nook/functions/viewer/requirements.txt
+      shell: bash
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq curl
+        curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared-linux-amd64.deb
+        sudo dpkg -i cloudflared-linux-amd64.deb
+        sudo snap install kubectl --classic
+      shell: bash
+
+    - name: Start FastAPI server
+      run: |
+        export PYTHONPATH=$(pwd)/nook
+        nohup uvicorn nook.functions.viewer.viewer:app --host 0.0.0.0 --port 8000 &
+        sleep 5
+      shell: bash
+      env:        
+        GEMINI_API_KEY: ${{ inputs.gemini_api_key }}
+        OUTPUT_DIR: ${{ inputs.output_dir }}
+
+    - name: Authenticate Cloudflare Tunnel
+      run: |
+        echo ${{ inputs.cloudflare_tunnel_token }} > cloudflare_token.txt
+        cloudflared tunnel login cloudflare_token.txt
+      shell: bash
+
+    - name: Port forward using kubectl
+      run: |
+        POD_NAME=$(kubectl get pods --selector=app=cloudflared -o jsonpath='{.items[0].metadata.name}')
+        kubectl port-forward $POD_NAME 8000:8000 &
+        sleep 10
+        curl -s http://localhost:8000
+      shell: bash
